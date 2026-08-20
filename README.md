@@ -1,5 +1,90 @@
 # Project-test-1
 
+## Selected Project: Event Management App
+
+Implementation work is being carried out for the Event Management option. The
+original assignment material remains under `G62-Project-test-1-main/`, while the
+root Maven project is the implementation repository.
+
+### Stage 1 Foundation
+
+The initial project setup uses:
+
+- Java 25 language and bytecode level.
+- Maven 3.9 or later.
+- JUnit Jupiter 5.13.4.
+- MySQL 8.4 through Docker Compose.
+- MySQL Connector/J 8.0.33.
+- Local database settings from an ignored `.env` file.
+
+The database uses host port `3307` to avoid colliding with the earlier SQL
+training database on port `3306`.
+
+#### Prerequisites
+
+- JDK 25 or later. Maven must report Java 25 or later with `mvn.cmd -version`.
+- Maven 3.9 or later.
+- Docker Desktop with the Docker engine running.
+
+The plain `java` command on some Windows installations may still resolve to an
+older Oracle Java runtime. Use the Maven commands below; the Maven compiler is
+configured to produce Java 25 bytecode. The repository also contains a local
+`.mvn` configuration so Maven detects this project as its base directory instead
+of accidentally inheriting configuration from the root of the `C:` drive.
+
+#### Local Configuration
+
+Create the ignored local configuration once:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Replace both `change-me` values in `.env`. Never commit this file. The
+application checks JVM properties first, environment variables second, and the
+local `.env` file last.
+
+#### Start and Verify
+
+Start MySQL and wait for its health check:
+
+```powershell
+docker compose up -d --wait
+```
+
+Run the fast tests that do not require a database:
+
+```powershell
+mvn.cmd clean test
+```
+
+Run all tests, including the JDBC `SELECT 1` smoke check:
+
+```powershell
+mvn.cmd -Pdatabase-smoke test
+```
+
+Stop MySQL without deleting its data:
+
+```powershell
+docker compose down
+```
+
+To deliberately reset the local database, use `docker compose down -v`. This
+deletes the named development volume and cannot be undone.
+
+#### Stage 1 Completion Checklist
+
+- [x] Existing repository selected as the implementation repository.
+- [x] Separate feature branch created for Stage 1.
+- [x] Java and Maven project structure added.
+- [x] JUnit test foundation added.
+- [x] Generated output and local credentials ignored.
+- [x] Database configuration kept outside committed source.
+- [x] MySQL container passes its health check.
+- [x] JDBC smoke test executes `SELECT 1` successfully.
+- [x] Clean Maven test run passes.
+
 ## UML Class Diagram — Event Management App
 
 ```mermaid
