@@ -1,0 +1,14 @@
+# Java and Maven build output
+target/
+out/
+*.class
+*.log
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+
+# Operating-system files
+.DS_Store
+Thumbs.db
