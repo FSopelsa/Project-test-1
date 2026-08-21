@@ -1,5 +1,105 @@
 # Project-test-1
 
+## New Device Setup — Read Before Testing or Development
+
+The Stage 1 implementation branch is `codex/event-management-stage-1`. Its
+required project files are already tracked in Git and the branch is currently
+published at the configured `origin` remote. A fresh device must still provide
+the local tools and credentials described below.
+
+### What belongs in Git and what stays local
+
+The repository contains the Maven build, Java source, tests, Docker Compose
+definition, `.env.example`, Maven configuration, assignment material, and
+shared IntelliJ project settings. These are the files another device needs to
+clone and continue development.
+
+The following must remain local and are intentionally not pushed:
+
+- `.env`, because it contains local database credentials.
+- `target/`, `out/`, and compiled `.class` files, because they are generated.
+- `.idea/workspace.xml`, because it contains machine/user-specific IDE state.
+- The Docker image, named MySQL volume, and running container, because database
+  state is local runtime data rather than source code.
+
+The Stage 1 branch is synchronized with its remote branch. After this README
+update is committed, that documentation commit also needs to be pushed before
+another device can see it.
+
+### Required software on a new Windows device
+
+Install or make available:
+
+1. **Git**, to clone the repository and switch to the implementation branch.
+2. **A JDK 25 or later**, not only a JRE. The Maven build targets Java 25.
+3. **Maven 3.9 or later**, unless a Maven Wrapper is added later. Maven must
+   use the JDK, not the older Java runtime that Windows may expose on `PATH`.
+4. **Docker Desktop** with the Docker engine running and Linux containers
+   enabled. The first database startup downloads the `mysql:8.4` image.
+5. **Internet access on the first build**, so Maven can download dependencies
+   into the local Maven cache. Later builds can use that cache offline.
+6. **An IDE such as IntelliJ IDEA**, optional. If used, import the root
+   `pom.xml` and select a locally installed JDK 25 or later as the Project SDK.
+
+Verify the tools before opening the application:
+
+```powershell
+git --version
+java -version
+javac -version
+mvn.cmd -version
+docker --version
+docker compose version
+```
+
+`mvn.cmd -version` should report Java 25 or later. If `java -version` reports
+an older runtime, set `JAVA_HOME` to the installed JDK and put its `bin`
+directory before older Java entries in `PATH`, then reopen PowerShell or the
+IDE.
+
+### Clone and select the project branch
+
+```powershell
+git clone https://github.com/FSopelsa/Project-test-1.git
+Set-Location Project-test-1
+git switch --track origin/codex/event-management-stage-1
+```
+
+If the branch has already been cloned locally, use:
+
+```powershell
+git pull --ff-only
+```
+
+### Create local configuration and run Stage 1
+
+The `.env` file is not in Git. Create it from the safe template and replace
+both placeholder values with local development values:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Then start the database and run the tests:
+
+```powershell
+docker compose up -d --wait
+mvn.cmd clean test
+mvn.cmd -Pdatabase-smoke test
+```
+
+The database smoke profile executes a real JDBC `SELECT 1`. The first Docker
+startup creates an empty local database volume; Stage 1 does not yet contain a
+schema or seed data. The volume persists across `docker compose down`, but
+`docker compose down -v` deliberately deletes it and should only be used for a
+reset.
+
+When finished working, the container can be stopped without deleting data:
+
+```powershell
+docker compose down
+```
+
 ## Selected Project: Event Management App
 
 Implementation work is being carried out for the Event Management option. The
