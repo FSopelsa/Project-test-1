@@ -184,6 +184,44 @@ deletes the named development volume and cannot be undone.
 - [x] JDBC smoke test executes `SELECT 1` successfully.
 - [x] Clean Maven test run passes.
 
+### Stage 2 Domain Model
+
+The first domain layer is deliberately independent of JDBC and console input.
+Its design prepares for the later repository and service stages:
+
+- Domain fields are immutable. A repository will return a new persisted object
+  rather than changing an object's ID after construction.
+- A `Long` ID is `null` for a new object and positive for an object reconstructed
+  from the database.
+- Persisted entity equality uses the database ID and concrete type. Two unsaved
+  objects are never equal merely because both IDs are `null`.
+- `IndividualParticipant` and `OrganizationParticipant` keep subtype-specific
+  fields out of their shared base class and implement `displayName()`
+  polymorphically.
+- An `Invitation` points to one `Event` and one `Participant`. `Event` does not
+  expose a mutable invitation collection; services will query invitations from
+  repositories when applying capacity rules.
+- Event timestamps use `LocalDateTime`, matching the local community-center
+  scenario. Time-dependent methods receive an explicit reference time so tests
+  do not depend on the system clock.
+- Historical events are valid domain records. The future service layer—not the
+  constructor—will decide whether a newly created event must be in the future.
+- A participant email is required but is not assumed to be unique unless that
+  business rule is confirmed later.
+- Pending invitations cannot contain a response timestamp; accepted and
+  declined invitations must contain one. The permitted status transitions are
+  intentionally deferred to the invitation-service stage.
+
+#### Stage 2 Completion Checklist
+
+- [x] `Participant` inheritance model implemented.
+- [x] Individual and organization participants implemented.
+- [x] Event validation and deterministic time helpers implemented.
+- [x] Invitation relationships and persisted-state validation implemented.
+- [x] Shared validation centralized in the domain package.
+- [x] Domain objects remain independent of JDBC and the console.
+- [x] Complete fast and database-profile test suites pass.
+
 ## UML Class Diagram — Event Management App
 
 ```mermaid
@@ -196,8 +234,8 @@ classDiagram
         +LocalDateTime endTime
         +String location
         +int capacity
-        +isUpcoming() boolean
-        +availableSpots() int
+        +isUpcomingAt(referenceTime) boolean
+        +availableSpots(acceptedParticipants) int
     }
 
     class Participant {
