@@ -2,10 +2,9 @@
 
 ## New Device Setup — Read Before Testing or Development
 
-The Stage 1 implementation branch is `codex/event-management-stage-1`. Its
-required project files are already tracked in Git and the branch is currently
-published at the configured `origin` remote. A fresh device must still provide
-the local tools and credentials described below.
+The Stage 1 Event Management implementation is on `main`. Its required project
+files are tracked in Git and published at the configured `origin` remote. A
+fresh device must still provide the local tools and credentials described below.
 
 ### What belongs in Git and what stays local
 
@@ -22,9 +21,8 @@ The following must remain local and are intentionally not pushed:
 - The Docker image, named MySQL volume, and running container, because database
   state is local runtime data rather than source code.
 
-The Stage 1 branch is synchronized with its remote branch. After this README
-update is committed, that documentation commit also needs to be pushed before
-another device can see it.
+The implementation is intended to be picked up from `main`; no feature-branch
+checkout is required for normal development.
 
 ### Required software on a new Windows device
 
@@ -62,7 +60,8 @@ IDE.
 ```powershell
 git clone https://github.com/FSopelsa/Project-test-1.git
 Set-Location Project-test-1
-git switch --track origin/codex/event-management-stage-1
+git switch main
+git pull --ff-only
 ```
 
 If the branch has already been cloned locally, use:
@@ -176,7 +175,7 @@ deletes the named development volume and cannot be undone.
 #### Stage 1 Completion Checklist
 
 - [x] Existing repository selected as the implementation repository.
-- [x] Separate feature branch created for Stage 1.
+- [x] Separate feature branch used for Stage 1 and merged into `main`.
 - [x] Java and Maven project structure added.
 - [x] JUnit test foundation added.
 - [x] Generated output and local credentials ignored.
